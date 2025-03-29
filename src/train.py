@@ -27,7 +27,7 @@ NUM_CLASSES = 8
 
 # Transform cơ bản (áp dụng cho tất cả dữ liệu)
 basic_transform = transforms.Compose([
-    transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.BICUBIC),
+    transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.LANCZOS),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -35,7 +35,7 @@ basic_transform = transforms.Compose([
 
 # Transform dành riêng cho lớp thiểu số
 minority_aug_transform = transforms.Compose([
-    transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.BICUBIC),
+    transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.LANCZOS),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
