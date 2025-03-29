@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+from dataset import basic_transform, minority_aug_transform
 
 # 📌 Thêm argparse để nhận tham số từ command line
 parser = argparse.ArgumentParser(description="Evaluate Fish Classifier")
@@ -29,12 +30,12 @@ CSV_PATH = args.csv_path  # Đọc CSV path từ dòng lệnh
 IMG_DIR = "data/images/"
 
 try:
-    dataset = FishDatasetWithAugmentation(CSV_PATH, IMG_DIR)
+    dataset = FishDatasetWithAugmentation(CSV_PATH, IMG_DIR, transform=basic_transform)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
+
 except FileNotFoundError as e:
     raise FileNotFoundError(f"Lỗi khi tải dataset: {e}")
 
-# Đánh giá
 all_preds, all_labels = [], []
 with torch.no_grad():
     for images, labels in dataloader:
