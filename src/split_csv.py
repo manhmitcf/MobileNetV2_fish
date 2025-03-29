@@ -11,6 +11,10 @@ def split_csv(input_csv, output_dir="data",
     # Đọc dữ liệu
     df = pd.read_csv(input_csv)
 
+    # Kiểm tra xem cột 'score' có tồn tại trong dữ liệu không
+    if 'score' not in df.columns:
+        raise ValueError("File CSV không chứa cột 'score'.")
+
     # Kiểm tra tổng tỷ lệ phải bằng 1
     if train_ratio + val_ratio + test_ratio != 1:
         raise ValueError("Tổng train_ratio, val_ratio và test_ratio phải bằng 1.")
