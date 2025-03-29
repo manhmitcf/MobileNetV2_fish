@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from dataset import FishDataset, transform
+from dataset import FishDatasetWithAugmentation
 from model import FishClassifier
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
@@ -20,7 +20,7 @@ except FileNotFoundError:
 CSV_PATH = "data/val.csv"
 IMG_DIR = "data/images/"
 try:
-    dataset = FishDataset(CSV_PATH, IMG_DIR, transform=transform)
+    dataset = FishDatasetWithAugmentation(CSV_PATH, IMG_DIR)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
 except FileNotFoundError as e:
     raise FileNotFoundError(f"Lỗi khi tải dataset: {e}")
