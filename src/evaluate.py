@@ -1,3 +1,4 @@
+import argparse
 import torch
 from torch.utils.data import DataLoader
 from dataset import FishDatasetWithAugmentation
@@ -7,18 +8,26 @@ from sklearn.metrics import accuracy_score, f1_score, classification_report, con
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+# 📌 Thêm argparse để nhận tham số từ command line
+parser = argparse.ArgumentParser(description="Evaluate Fish Classifier")
+parser.add_argument("--model_path", type=str, required=True, help="Đường dẫn tới file mô hình")
+parser.add_argument("--csv_path", type=str, required=True, help="Đường dẫn tới file CSV cho dataset")
+args = parser.parse_args()
+
 # Load mô hình
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = FishClassifier().to(device)
+
 try:
-    model.load_state_dict(torch.load("models/fish_classifier.pth", map_location=device))
+    model.load_state_dict(torch.load(args.model_path, map_location=device))
     model.eval()
 except FileNotFoundError:
-    raise FileNotFoundError("Không tìm thấy file mô hình 'models/fish_classifier.pth'.")
+    raise FileNotFoundError(f"Không tìm thấy file mô hình '{args.model_path}'.")
 
 # Load test dataset
-CSV_PATH = "data/val.csv"
+CSV_PATH = args.csv_path  # Đọc CSV path từ dòng lệnh
 IMG_DIR = "data/images/"
+
 try:
     dataset = FishDatasetWithAugmentation(CSV_PATH, IMG_DIR)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
