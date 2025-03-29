@@ -17,7 +17,7 @@ except FileNotFoundError:
     raise FileNotFoundError("Không tìm thấy file mô hình 'models/fish_classifier.pth'.")
 
 # Load test dataset
-CSV_PATH = "data/val.csv"
+CSV_PATH = "data/test.csv"
 IMG_DIR = "data/images/"
 try:
     dataset = FishDataset(CSV_PATH, IMG_DIR, transform=transform)

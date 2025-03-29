@@ -1,9 +1,10 @@
 import os
 import pandas as pd
+from sklearn.model_selection import StratifiedShuffleSplit
 
 def split_csv(input_csv, output_dir="data", 
               train_csv="train.csv", val_csv="val.csv", test_csv="test.csv",
-              train_ratio=0.8, val_ratio=0.15, test_ratio=0.05):
+              train_ratio=0.8, val_ratio=0.1, test_ratio=0.1):
     # Tạo thư mục output nếu chưa có
     os.makedirs(output_dir, exist_ok=True)
 
@@ -14,25 +15,24 @@ def split_csv(input_csv, output_dir="data",
     if train_ratio + val_ratio + test_ratio != 1:
         raise ValueError("Tổng train_ratio, val_ratio và test_ratio phải bằng 1.")
 
-    # Shuffle dữ liệu (ngẫu nhiên hoàn toàn)
-    df = df.sample(frac=1).reset_index(drop=True)
-
-    # Tính toán kích thước từng tập dữ liệu
-    n = len(df)
-    train_end = int(train_ratio * n)
-    val_end = train_end + int(val_ratio * n)
-
-    # Chia dữ liệu theo chỉ số
-    train_df = df.iloc[:train_end]
-    val_df = df.iloc[train_end:val_end]
-    test_df = df.iloc[val_end:]
+    # Stratified Split sử dụng label
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=test_ratio+val_ratio, random_state=42)
+    for train_val_index, test_index in sss.split(df, df['score']):
+        train_val_df = df.iloc[train_val_index]
+        test_df = df.iloc[test_index]
+    
+    # Chia train và validation từ tập train_val
+    sss_train_val = StratifiedShuffleSplit(n_splits=1, test_size=val_ratio/(train_ratio + val_ratio), random_state=42)
+    for train_index, val_index in sss_train_val.split(train_val_df, train_val_df['score']):
+        train_df = train_val_df.iloc[train_index]
+        val_df = train_val_df.iloc[val_index]
 
     # Lưu vào thư mục `data/`
     train_df.to_csv(os.path.join(output_dir, train_csv), index=False)
     val_df.to_csv(os.path.join(output_dir, val_csv), index=False)
     test_df.to_csv(os.path.join(output_dir, test_csv), index=False)
 
-    print("Dataset split completed with full shuffling:")
+    print("Dataset split completed with Stratified Shuffle Split:")
     print(f"Train: {len(train_df)} samples, Val: {len(val_df)} samples, Test: {len(test_df)} samples")
 
 if __name__ == "__main__":
