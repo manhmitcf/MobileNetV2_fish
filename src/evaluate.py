@@ -79,5 +79,6 @@ try:
     plt.ylabel('True Labels')
     plt.title('Confusion Matrix')
     plt.show()
+    plt.savefig("confusion_matrix.png")
 except Exception as e:
     print(f"Lỗi khi tạo Confusion Matrix: {e}")

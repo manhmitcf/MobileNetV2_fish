@@ -61,7 +61,10 @@ model.to(device)
 # Loss và Optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
-
+loss_train = []
+loss_val = []
+acc_train = []
+acc_val = []
 # Training loop
 for epoch in range(EPOCHS):
     # Training phase
@@ -105,6 +108,11 @@ for epoch in range(EPOCHS):
     
     avg_val_loss = val_running_loss / len(val_dataloader)
     val_accuracy = 100 * val_correct / val_total
+    
+    loss_train.append(avg_train_loss)
+    loss_val.append(avg_val_loss)
+    acc_train.append(train_accuracy)
+    acc_val.append(val_accuracy)
     print(f"    Train Loss: {avg_train_loss:.4f}, Train Accuracy: {train_accuracy:.2f}%")
     print(f"    Val Loss: {avg_val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}%")
 
@@ -112,3 +120,41 @@ for epoch in range(EPOCHS):
 os.makedirs("models", exist_ok=True)
 torch.save(model.state_dict(), "models/fish_classifier.pth")
 print("Đã lưu mô hình!")
+
+
+
+import matplotlib.pyplot as plt
+import os
+
+# Tạo thư mục "plots" nếu chưa có
+os.makedirs("plots", exist_ok=True)
+
+# Vẽ đồ thị loss và accuracy
+plt.figure(figsize=(12, 6))
+
+# Đồ thị Loss
+plt.subplot(1, 2, 1)  # Chia figure thành 1 hàng, 2 cột, vẽ đồ thị đầu tiên ở vị trí 1
+plt.plot(loss_train, label='Train Loss')
+plt.plot(loss_val, label='Val Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+
+# Đồ thị Accuracy
+plt.subplot(1, 2, 2)  # Chia figure thành 1 hàng, 2 cột, vẽ đồ thị thứ hai ở vị trí 2
+plt.plot(acc_train, label='Train Accuracy')
+plt.plot(acc_val, label='Val Accuracy') 
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+
+# Sắp xếp layout để đồ thị không bị chồng lên nhau
+plt.tight_layout()
+
+# Lưu đồ thị vào thư mục "plots"
+plt.savefig("plots/loss_accuracy_plot.png")  # Lưu đồ thị vào file PNG trong thư mục "plots"
+print("Đã lưu đồ thị accuracy và loss vào thư mục 'plots'!")
+
+# Hiển thị đồ thị trên màn hình
+plt.show()
+
