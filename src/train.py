@@ -37,8 +37,6 @@ train_dataset = FishDatasetWithAugmentation(
 val_dataset = FishDatasetWithAugmentation(
     csv_file=VAL_CSV_PATH,
     img_dir=IMG_DIR,
-    transform=basic_transform,
-    aug_transform=None
 )
 class_counts = train_dataset.data['score'].value_counts()
 class_weights = 1.0 / class_counts
