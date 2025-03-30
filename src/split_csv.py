@@ -4,7 +4,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 
 def split_csv(input_csv, output_dir="data", 
               train_csv="train.csv", val_csv="val.csv", test_csv="test.csv",
-              train_ratio=0.8, val_ratio=0.1, test_ratio=0.1):
+              train_ratio=0.8, test_ratio=0.1):
     # Tạo thư mục output nếu chưa có
     os.makedirs(output_dir, exist_ok=True)
 
@@ -15,18 +15,15 @@ def split_csv(input_csv, output_dir="data",
     if 'score' not in df.columns:
         raise ValueError("File CSV không chứa cột 'score'.")
 
-    # Kiểm tra tổng tỷ lệ phải bằng 1
-    if train_ratio + val_ratio + test_ratio != 1:
-        raise ValueError("Tổng train_ratio, val_ratio và test_ratio phải bằng 1.")
 
     # Stratified Split sử dụng label
-    sss = StratifiedShuffleSplit(n_splits=1, test_size=test_ratio+val_ratio, random_state=42)
+    sss = StratifiedShuffleSplit(n_splits=1, test_size = test_ratio, random_state=42)
     for train_val_index, test_index in sss.split(df, df['score']):
         train_val_df = df.iloc[train_val_index]
         test_df = df.iloc[test_index]
     
     # Chia train và validation từ tập train_val
-    sss_train_val = StratifiedShuffleSplit(n_splits=1, test_size=val_ratio/(train_ratio + val_ratio), random_state=42)
+    sss_train_val = StratifiedShuffleSplit(n_splits=1, test_size=0.1, random_state=42)
     for train_index, val_index in sss_train_val.split(train_val_df, train_val_df['score']):
         train_df = train_val_df.iloc[train_index]
         val_df = train_val_df.iloc[val_index]
