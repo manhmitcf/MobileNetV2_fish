@@ -9,7 +9,10 @@ class FishClassifier(nn.Module):
         self.mobilenetv2 = models.mobilenet_v2(pretrained=True)
         
         # Thay thế Fully Connected Layer cuối cùng để có đúng số lượng lớp
-        self.mobilenetv2.classifier[1] = nn.Linear(self.mobilenetv2.classifier[1].in_features, num_classes)
+        self.mobilenetv2.classifier[1] = nn.Sequential(
+    nn.Dropout(0.5),
+    nn.Linear(self.mobilenetv2.classifier[1].in_features, num_classes)
+)
         
     def forward(self, x):
         return self.mobilenetv2(x)
