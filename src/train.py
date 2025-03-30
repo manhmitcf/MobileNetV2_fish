@@ -8,7 +8,7 @@ from dataset import FishDatasetWithAugmentation
 from model import FishClassifier  # Đảm bảo model là FishClassifier sử dụng MobileNetV2
 import os
 from tqdm import tqdm
-from dataset import basic_transform, minority_aug_transform
+from dataset import basic_transform, minority_aug_transform, basic_transform1
 # 📌 Thêm argparse để nhận tham số từ terminal
 parser = argparse.ArgumentParser(description="Train Fish Classifier")
 parser.add_argument("--epochs", type=int, default=20, help="Số epoch để train (default: 20)")
@@ -37,6 +37,7 @@ train_dataset = FishDatasetWithAugmentation(
 val_dataset = FishDatasetWithAugmentation(
     csv_file=VAL_CSV_PATH,
     img_dir=IMG_DIR,
+    transform=basic_transform1,
 )
 class_counts = train_dataset.data['score'].value_counts()
 class_weights = 1.0 / class_counts

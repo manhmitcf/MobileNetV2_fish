@@ -49,6 +49,11 @@ basic_transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
+basic_transform1 = transforms.Compose([
+    transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.LANCZOS),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+])
 
 # Transform dành riêng cho lớp thiểu số
 minority_aug_transform = transforms.Compose([
