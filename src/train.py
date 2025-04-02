@@ -38,6 +38,7 @@ train_dataset = FishDatasetWithAugmentation(
 val_dataset = FishDatasetWithAugmentation(
     csv_file=VAL_CSV_PATH,
     img_dir=IMG_DIR,
+    img_dir_aug=IMG_DIR_AUG,
     transform=basic_transform,
 )
 train_dataloader = DataLoader(
