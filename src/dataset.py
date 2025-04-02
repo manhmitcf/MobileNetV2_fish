@@ -5,24 +5,25 @@ from torch.utils.data import Dataset
 from PIL import Image
 from torchvision import transforms
 class FishDatasetWithAugmentation(Dataset):
-    def __init__(self, csv_file, img_dir, transform=None, aug_transform=None, minority_classes=[]):
+    def __init__(self, csv_file, img_dir,img_dir_aug, transform=None, aug_transform=None):
         self.data = pd.read_csv(csv_file)
         self.img_dir = img_dir
         self.transform = transform
         self.aug_transform = aug_transform
-        self.minority_classes = minority_classes
-        
+        self.img_dir_aug = img_dir_aug
         # Kiểm tra dữ liệu đầu vào
-        if not os.path.exists(img_dir):
-            raise FileNotFoundError(f"Thư mục ảnh '{img_dir}' không tồn tại.")
+        if not os.path.exists(img_dir) or not os.path.exists(img_dir_aug):
+            raise FileNotFoundError(f"Thư mục ảnh '{img_dir}' hoặc '{img_dir_aug}' không tồn tại.")
         if self.data.empty:
             raise ValueError(f"File CSV '{csv_file}' không chứa dữ liệu.")
-    
     def __len__(self):
         return len(self.data)
     
     def __getitem__(self, idx):
-        img_name = os.path.join(self.img_dir, self.data.iloc[idx, 0])  # Tên ảnh
+        try:
+            img_name = os.path.join(self.img_dir, self.data.iloc[idx, 0]) 
+        except:
+            img_name = os.path.join(self.img_dir_aug, self.data.iloc[idx, 0])
         try:
             image = Image.open(img_name).convert('RGB')  # Đọc ảnh và chuyển đổi sang RGB
         except FileNotFoundError:
@@ -34,29 +35,20 @@ class FishDatasetWithAugmentation(Dataset):
         if label < 0 or label > 7:
             raise ValueError(f"Nhãn '{label}' không hợp lệ. Phải nằm trong khoảng [2, 9].")
         label = torch.tensor(label, dtype=torch.long)
-        
-        # Áp dụng augmentation nếu thuộc lớp thiểu số
-        if label.item() in self.minority_classes and self.aug_transform:
-            image = self.aug_transform(image)
-        elif self.transform:
+        if transforms:
             image = self.transform(image)
-        
+        else:
+            image = self.aug_transform(image)
         return image, label
-# Transform cơ bản (áp dụng cho tất cả dữ liệu)
+
 basic_transform = transforms.Compose([
-    transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.LANCZOS),
-    transforms.RandomHorizontalFlip(p=0.5),
-    transforms.ToTensor(),
-    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-])
-basic_transform1 = transforms.Compose([
     transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.LANCZOS),
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-# Transform dành riêng cho lớp thiểu số
-minority_aug_transform = transforms.Compose([
+
+aug_transform = transforms.Compose([
     transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.LANCZOS),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),

@@ -8,7 +8,7 @@ from dataset import FishDatasetWithAugmentation
 from model import FishClassifier 
 import os
 from tqdm import tqdm
-from dataset import basic_transform, minority_aug_transform, basic_transform1
+from dataset import basic_transform, aug_transform
 # 📌 Thêm argparse để nhận tham số từ terminal
 parser = argparse.ArgumentParser(description="Train Fish Classifier")
 parser.add_argument("--epochs", type=int, default=20, help="Số epoch để train (default: 20)")
@@ -17,9 +17,10 @@ parser.add_argument("--lr", type=float, default=0.001, help="Learning rate (defa
 args = parser.parse_args()
 
 # Cấu hình từ argparse
-TRAIN_CSV_PATH = "data/train.csv"
+TRAIN_CSV_PATH = "data/train_balanced.csv"
 VAL_CSV_PATH = "data/val.csv"
 IMG_DIR = "data/images/"
+IMG_DIR_AUG = "data/train_augmented/"
 EPOCHS = args.epochs
 BATCH_SIZE = args.batch_size
 LEARNING_RATE = args.lr
@@ -29,27 +30,20 @@ NUM_CLASSES = 8
 train_dataset = FishDatasetWithAugmentation(
     csv_file=TRAIN_CSV_PATH,
     img_dir=IMG_DIR,
-    transform=basic_transform,
-    aug_transform=minority_aug_transform,
-    minority_classes=[0, 1, 2, 3, 5, 6, 7]  # Cần cập nhật lớp thiểu số theo bài toán
+    img_dir_aug=IMG_DIR_AUG,
+    transform=None,
+    aug_transform=aug_transform,  
 )
 
 val_dataset = FishDatasetWithAugmentation(
     csv_file=VAL_CSV_PATH,
     img_dir=IMG_DIR,
-    transform=basic_transform1,
+    transform=basic_transform,
 )
-class_counts = train_dataset.data['score'].value_counts()
-class_weights = 1.0 / class_counts
-class_weights = class_weights / class_weights.sum()
-sample_weights = train_dataset.data['score'].map(class_weights).to_numpy()
-sample_weights = torch.tensor(sample_weights, dtype=torch.float32)
-sampler = WeightedRandomSampler(sample_weights, num_samples=len(sample_weights), replacement=True)
 train_dataloader = DataLoader(
     train_dataset, 
     batch_size=BATCH_SIZE, 
-    shuffle=False,  # Đặt shuffle=False khi sử dụng sampler
-    sampler=sampler
+    shuffle=True,   
 )
 val_dataloader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
