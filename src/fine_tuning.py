@@ -57,9 +57,8 @@ if not os.path.exists(checkpoint_path):
     raise FileNotFoundError(f"Checkpoint file {checkpoint_path} not found. Please check the path.")
 checkpoint = torch.load(checkpoint_path, map_location=device)
 # Load trọng số cũ vào mô hình
-model.load_state_dict(checkpoint["model_state_dict"])
+model.load_state_dict(checkpoint)
 model.to(device)
-
 # Loss và Optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
