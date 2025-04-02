@@ -10,6 +10,7 @@ class FishDatasetWithAugmentation(Dataset):
         self.img_dir = img_dir
         self.transform = transform
         self.aug_transform = aug_transform
+        self.aug_transform = aug_transform
         self.img_dir_aug = img_dir_aug
         # Kiểm tra dữ liệu đầu vào
         if not os.path.exists(img_dir) or not os.path.exists(img_dir_aug):
