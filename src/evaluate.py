@@ -28,7 +28,7 @@ except FileNotFoundError:
 # Load test dataset
 CSV_PATH = args.csv_path  # Đọc CSV path từ dòng lệnh
 IMG_DIR = "data/images/"
-IMG_DIR_AUG = "data/images_augmented/"  # Đường dẫn tới thư mục ảnh đã tăng cường
+IMG_DIR_AUG = "data/train_augmented/"  # Đường dẫn tới thư mục ảnh đã tăng cường
 
 try:
     dataset = FishDatasetWithAugmentation(CSV_PATH, IMG_DIR, IMG_DIR_AUG, transform=basic_transform)
