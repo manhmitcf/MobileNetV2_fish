@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, WeightedRandomSampler
 from torchvision import transforms
 from dataset import FishDatasetWithAugmentation
-from model import FishClassifier  # Đảm bảo model là FishClassifier sử dụng MobileNetV2
+from model import FishClassifier 
 import os
 from tqdm import tqdm
 from dataset import basic_transform, minority_aug_transform, basic_transform1

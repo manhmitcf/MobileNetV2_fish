@@ -24,7 +24,7 @@ class FishDatasetWithAugmentation(Dataset):
     def __getitem__(self, idx):
         img_name = os.path.join(self.img_dir, self.data.iloc[idx, 0])  # Tên ảnh
         try:
-            image = Image.open(img_name).convert("RGB")
+            image = Image.open(img_name).convert('HSV')
         except FileNotFoundError:
             raise FileNotFoundError(f"Không tìm thấy ảnh '{img_name}'.")
         
