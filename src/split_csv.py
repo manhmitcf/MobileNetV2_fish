@@ -4,7 +4,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 
 def split_csv(input_csv, output_dir="data", 
               train_csv="train.csv", val_csv="val.csv", test_csv="test.csv",
-              train_ratio=0.8, test_ratio=0.1):
+              train_ratio=0.8, test_ratio=0.2):
     # Tạo thư mục output nếu chưa có
     os.makedirs(output_dir, exist_ok=True)
 
@@ -23,7 +23,7 @@ def split_csv(input_csv, output_dir="data",
         test_df = df.iloc[test_index]
     
     # Chia train và validation từ tập train_val
-    sss_train_val = StratifiedShuffleSplit(n_splits=1, test_size=0.1, random_state=42)
+    sss_train_val = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
     for train_index, val_index in sss_train_val.split(train_val_df, train_val_df['score']):
         train_df = train_val_df.iloc[train_index]
         val_df = train_val_df.iloc[val_index]
