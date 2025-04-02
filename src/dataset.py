@@ -23,18 +23,21 @@ class FishDatasetWithAugmentation(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        try:
-            img_name = os.path.join(self.img_dir, self.data.iloc[idx, 0])
-        except:
+        img_name = os.path.join(self.img_dir, self.data.iloc[idx, 0])
+        if not os.path.exists(img_name):
             img_name = os.path.join(self.img_dir_aug, self.data.iloc[idx, 0])
+            if not os.path.exists(img_name):
+                print(f"Warning: Image '{img_name}' not found. Skipping.")
+                return None, None
+
         try:
-            image = Image.open(img_name).convert('RGB')  # Đọc ảnh và chuyển đổi sang RGB
+            image = Image.open(img_name).convert('RGB')  # Read and convert image to RGB
         except FileNotFoundError:
             raise FileNotFoundError(f"Không tìm thấy ảnh '{img_name}'.")
 
-        # Lấy nhãn và chuyển đổi
+        # Get label and convert
         label = self.data.iloc[idx, 1]
-        label = int(label) - 2  # Chuyển nhãn về chỉ số lớp (0-7)
+        label = int(label) - 2  # Convert label to class index (0-7)
         if label < 0 or label > 7:
             raise ValueError(f"Nhãn '{label}' không hợp lệ. Phải nằm trong khoảng [2, 9].")
         label = torch.tensor(label, dtype=torch.long)
